@@ -121,7 +121,7 @@ namespace System_Programing_Critical_Section_Homework4
             {
                 lock (_lock)
                 {
-                    for (int i = 4; i < 10; i++)
+                    for (int i = 1; i < 10; i++)
                     {
                         string jsonName = "Cars" + i.ToString() + ".json";
                         if (File.Exists(jsonName))
@@ -144,7 +144,7 @@ namespace System_Programing_Critical_Section_Homework4
         {
             var AllCars = new List<Car>();
             object _lock = new object();
-            for (int i = 4; i < 10; i++)
+            for (int i = 1; i < 10; i++)
             {
                 string jsonName = "Cars" + i.ToString() + ".json";
                 if (File.Exists(jsonName))
@@ -165,7 +165,6 @@ namespace System_Programing_Critical_Section_Homework4
             Thread.Sleep(1000);
             Cars = new ObservableCollection<Car>(AllCars!);
             //MessageBox.Show(AllCars.Count.ToString());
-            
 
 
         }
