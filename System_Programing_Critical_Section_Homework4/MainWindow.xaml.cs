@@ -32,7 +32,7 @@ namespace System_Programing_Critical_Section_Homework4
                 OnPropertyChanged();
             }
         }
-        
+
         private string milliSecond;
         public string MilliSecond
         {
@@ -73,22 +73,21 @@ namespace System_Programing_Critical_Section_Homework4
         {
             if (Cars != null)
             {
-                Cars.Clear();
+                Application.Current.Dispatcher.Invoke(() => { Cars.Clear(); });
             }
-            var watch = new Stopwatch();
             if (singleTextBox.IsChecked == true)
             {
                 MilliSecond = "00";
                 Second = "00 : ";
 
-                Thread thread = new Thread(()=> 
-                { 
+                Thread thread = new Thread(() =>
+                {
+                    var watch = new Stopwatch();
                     watch.Start();
                     SingleThread();
                     watch.Stop();
                     MilliSecond = watch.Elapsed.Milliseconds.ToString() + " milli";
                     Second = watch.Elapsed.Seconds.ToString() + " san : ";
-                    
                 });
                 thread.Start();
 
@@ -97,9 +96,9 @@ namespace System_Programing_Critical_Section_Homework4
             {
                 MilliSecond = "00";
                 Second = "00 : ";
-                
                 Thread thread = new Thread(() =>
                 {
+                    var watch = new Stopwatch();
                     watch.Start();
                     MultiThread();
                     watch.Stop();
@@ -107,20 +106,20 @@ namespace System_Programing_Critical_Section_Homework4
                     Second = watch.Elapsed.Seconds.ToString() + " san : ";
 
                 });
+                
                 thread.Start();
             }
-            
+
         }
 
         public void SingleThread()
         {
-            var AllCarss = new List<Car>();
-            object _lock = new object();
-
             Thread thread = new Thread(() =>
             {
+                object _lock = new object();
                 lock (_lock)
                 {
+                    var AllCarss = new List<Car>();
                     for (int i = 1; i < 10; i++)
                     {
                         string jsonName = "Cars" + i.ToString() + ".json";
@@ -131,12 +130,12 @@ namespace System_Programing_Critical_Section_Homework4
                             AllCarss.AddRange(carss!);
                         }
                     }
-                    //MessageBox.Show(AllCarss.Count.ToString());
+                    Application.Current.Dispatcher.Invoke(() => { Cars = new ObservableCollection<Car>(AllCarss!); });
                 }
             });
             thread.Start();
             Thread.Sleep(1000);
-            Cars = new ObservableCollection<Car>(AllCarss!);
+            //App.Current.Dispatcher.Invoke(() => { Cars = new ObservableCollection<Car>(AllCarss!); });
 
         }
 
@@ -146,6 +145,7 @@ namespace System_Programing_Critical_Section_Homework4
             object _lock = new object();
             for (int i = 1; i < 10; i++)
             {
+
                 string jsonName = "Cars" + i.ToString() + ".json";
                 if (File.Exists(jsonName))
                 {
@@ -156,14 +156,17 @@ namespace System_Programing_Critical_Section_Homework4
                             var JsonText = File.ReadAllText(jsonName);
                             var carss = JsonSerializer.Deserialize<List<Car>>(JsonText);
                             AllCars.AddRange(carss!);
+                            Application.Current.Dispatcher.Invoke(() => { Cars = new ObservableCollection<Car>(AllCars!); });
                         }
                     });
                     thread.Start();
                 }
             }
-            
+
             Thread.Sleep(1000);
-            Cars = new ObservableCollection<Car>(AllCars!);
+            //MessageBox.Show(AllCars.Count.ToString());
+
+
             //MessageBox.Show(AllCars.Count.ToString());
 
 
